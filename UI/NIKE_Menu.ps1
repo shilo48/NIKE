@@ -1,4 +1,5 @@
 ﻿Add-Type -assembly System.Windows.Forms
+$NIKE_VER = "1.0.0"
 
 $button1_click = {
     $custom_form = New-Object System.Windows.Forms.Form
@@ -35,9 +36,30 @@ Function profile_click()
         Write-Output "Clicked"
     }
 }
+Function init_textbox2()
+{
+    $powershell_ver = $PSVersionTable.PSVersion
+    $execution_policy = Get-ExecutionPolicy
+    $textBox2.Text += "NIKE version: $NIKE_VER"
+    $textBox2.Text += $new_line
+    $textBox2.Text += "Powershell version: $powershell_ver"
+    $textBox2.Text += $new_line
+    $textBox2.Text += "Execution Policy: $execution_policy"
+    $textBox2.Text += $new_line
+   
+    if($execution_policy -ne "Unrestricted"){
+        $textBox2.Text += "***Note! You must change the Execution Policy to Unrestricted"
+        $textBox2.Text += $new_line
+        $textBox2.Text += "***Run the following command via Powershell in Administrator mode:"
+        $textBox2.Text += $new_line
+        $textBox2.Text += "     Set-ExecutionPolicy Unrestricted"
+        $textBox2.Text += $new_line
+    }
+}
 
 $new_line = "`r`n"
-$font = New-Object System.Drawing.Font("Times New Roman",12,[System.Drawing.FontStyle]::Italic)
+$font = New-Object System.Drawing.Font("Times New Roman",12,[System.Drawing.FontStyle]::Italic)
+
 
 $main_form = New-Object System.Windows.Forms.Form
 $main_form.Text ='NIKE'
@@ -57,7 +79,7 @@ $groupBox1.ForeColor = "White"
 $profiles_list = @()
 $prof_packages_list = @()
 
-Get-ChildItem "$($PSScriptRoot)/Profiles" -Filter *.xml | 
+Get-ChildItem "$($PSScriptRoot)\..\Profiles" -Filter *.config | 
 Foreach-Object {
     $profiles_list += ($_.BaseName)
 
@@ -129,7 +151,10 @@ $textBox2.AutoSize = $true
 $textBox2.Multiline = $true
 $textBox2.ScrollBars = 'Both'
 $textBox2.Text = ""
+init_textbox2
 $main_form.Controls.Add($textBox2)
+
+
 
 $batches = @(1,2,3,4,5,6,7,8,9,10)
 $progressBar = New-Object System.Windows.Forms.ProgressBar
