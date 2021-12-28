@@ -17,6 +17,7 @@ $install_button_click = {
     .\install.ps1 ..\Profiles\res\packages.config
     cd $PSScriptRoot
     $textBox2.Text += "packages install - FINISH"
+    $textBox2.Text += $new_line
     $textBox2.Refresh()
 }
 Function checkbox_click  {
