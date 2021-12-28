@@ -28,12 +28,18 @@ $button1_click = {
 
 Function profile_click()
 {
-    Param($radio_buttons, $prof_packages_list, $profile_index, $textBox1)
+    Param($profiles_list, $prof_packages_list, $textBox1)
     
-    if ($radio_buttons[$profile_index].Checked) {
-        $textBox1.Text = $prof_packages_list[$profile_index]
-        $textBox1.Refresh()
-        Write-Output "Clicked"
+    if ($this.Checked) {
+        $i = 0
+        foreach ($profile in $profiles_list) {
+            if ($this.Text -eq $profile) {
+                $textBox1.Text = $prof_packages_list[$i]
+                $textBox1.Refresh()
+                break
+            }
+            ++$i
+        }
     }
 }
 Function init_textbox2()
@@ -95,22 +101,15 @@ Foreach-Object {
     $prof_packages_list += ($packages_list)
 }
 
-#$profiles_list.Length
-#$profiles_list
-#$prof_packages_list.Length
-#$prof_packages_list
-
 $textBox1 = New-Object System.Windows.Forms.TextBox
 $textBox1.Location = New-Object System.Drawing.Point(150,20)
 $textBox1.Size = New-Object System.Drawing.Size(400,250)
 $textBox1.AutoSize = $true
 $textBox1.Multiline = $true
 $textBox1.ScrollBars = 'Both'
-#$textBox1.Text = "Notepad++ $($new_line)Beyond Compare $($new_line)VS Code $($new_line)SecureCrt"
 $main_form.Controls.Add($textBox1)
 
 $button_y = 30
-$profile_index = 0
 $radio_buttons = @()
 foreach ($prof in $profiles_list)
 {
@@ -119,12 +118,11 @@ foreach ($prof in $profiles_list)
     $radioBtn.Location = "30,$($button_y)"
     $radioBtn.Text = $prof
     $radioBtn.ForeColor = "White"
-    $radioBtn.Add_Click({profile_click $radio_buttons $prof_packages_list $profile_index $textBox1})
+    $radioBtn.Add_Click({profile_click $profiles_list $prof_packages_list $textBox1})
 
     $groupBox1.Controls.Add($radioBtn)
 
     $button_y += 30
-    $profile_index += 1
     $radio_buttons += $radioBtn
 }
 $main_form.Controls.Add($groupBox1)
