@@ -18,7 +18,13 @@ $install_button_click = {
     cd $PSScriptRoot
     $textBox2.Text += "packages install - FINISH"
 }
-$button1_click = {
+Function custom_ok_button_click  {
+    Param($profiles_list, $prof_packages_list)
+    $custom_form.Close()
+}
+Function custom_button_click  {
+    Param($profiles_list, $prof_packages_list)
+
     $custom_form = New-Object System.Windows.Forms.Form
     $custom_form.Text ='Custom'
     $custom_form.Width = 150
@@ -26,7 +32,7 @@ $button1_click = {
     $custom_form.AutoSize = $true
     $custom_form.BackColor = "Black"
 
-    $packages_list = @("Notepad++", "MobaXterm", "VS Code", "WinScp", "VirtualBox", "Wireshark")
+    $packages_list = $profiles_list #@("Notepad++", "MobaXterm", "VS Code", "WinScp", "VirtualBox", "Wireshark")
     $button_y = 10
     foreach ($package in $packages_list)
     {
@@ -39,7 +45,15 @@ $button1_click = {
 
         $button_y += 30
     }
-        
+
+    $custom_ok_button = New-Object System.Windows.Forms.Button
+    $custom_ok_button.Location = New-Object System.Drawing.Point(20,280)
+    $custom_ok_button.Size = New-Object System.Drawing.Size(120,30)
+    $custom_ok_button.Text = "OK"
+    $custom_ok_button.ForeColor = "White"
+    $custom_ok_button.Add_Click({custom_ok_button_click $profiles_list $prof_packages_list})
+    $custom_form.Controls.Add($custom_ok_button)
+
     $custom_form.ShowDialog()
 }
 
@@ -150,21 +164,21 @@ foreach ($prof in $profiles_list)
 
 $main_form.Controls.Add($groupBox1)
 
-$button1 = New-Object System.Windows.Forms.Button
-$button1.Location = New-Object System.Drawing.Point(20,280)
-$button1.Size = New-Object System.Drawing.Size(120,30)
-$button1.Text = "Custom"
-$button1.ForeColor = "White"
-$button1.Add_Click($button1_click)
-$main_form.Controls.Add($button1)
+$custom_button = New-Object System.Windows.Forms.Button
+$custom_button.Location = New-Object System.Drawing.Point(20,280)
+$custom_button.Size = New-Object System.Drawing.Size(120,30)
+$custom_button.Text = "Custom"
+$custom_button.ForeColor = "White"
+$custom_button.Add_Click({custom_button_click $profiles_list $prof_packages_list})
+$main_form.Controls.Add($custom_button)
 
-$button2 = New-Object System.Windows.Forms.Button
-$button2.Location = New-Object System.Drawing.Point(450,280)
-$button2.Size = New-Object System.Drawing.Size(120,30)
-$button2.Text = "Install"
-$button2.ForeColor = "White"
-$button2.Add_Click($install_button_click)
-$main_form.Controls.Add($button2)
+$install_button = New-Object System.Windows.Forms.Button
+$install_button.Location = New-Object System.Drawing.Point(450,280)
+$install_button.Size = New-Object System.Drawing.Size(120,30)
+$install_button.Text = "Install"
+$install_button.ForeColor = "White"
+$install_button.Add_Click($install_button_click)
+$main_form.Controls.Add($install_button)
 
 $textBox2 = New-Object System.Windows.Forms.TextBox
 $textBox2.Location = New-Object System.Drawing.Point(20,320)
