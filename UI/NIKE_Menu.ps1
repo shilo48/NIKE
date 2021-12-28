@@ -38,6 +38,19 @@ Function custom_ok_button_click  {
     $textBox2.Refresh()
     $custom_form.Close()
 }
+
+Function custom_xml_profile_xml ([string[]]$packages_list) {
+    Write-Output $packages_list
+    $custom_profile_xml_path = "$($PSScriptRoot)\..\Profiles\customProfile.xml"
+    New-Item $custom_profile_xml_path  -ItemType File -Force
+    Set-Content $custom_profile_xml_path '<?xml version="1.0" encoding="utf-8"?>'
+    Add-Content $custom_profile_xml_path '<packages>'
+    foreach ($package in $packages_list) {
+        Add-Content $custom_profile_xml_path "`t<package id=`"$($package)`" />"
+    }
+    Add-Content $custom_profile_xml_path '</packages>'
+}
+
 Function custom_button_click  {
     Param($packages_list)
 
