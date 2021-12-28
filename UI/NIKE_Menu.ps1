@@ -1,6 +1,23 @@
 ﻿Add-Type -assembly System.Windows.Forms
 $NIKE_VER = "1.0.0"
+$global:current_config_file_name = ""
 
+$install_button_click = {
+    $textBox2.Text += "Create packages.config file"
+    $textBox2.Text += $new_line
+    $textBox2.Refresh()
+    $src_path = "$($PSScriptRoot)\..\Profiles\$($global:current_config_file_name).config"
+    $des_path = "$($PSScriptRoot)\..\Profiles\res\packages.config"
+    Copy-Item -Path $src_path -Destination $des_path
+
+    $textBox2.Text += "packages install - RUN"
+    $textBox2.Text += $new_line
+    $textBox2.Refresh()
+    cd $PSScriptRoot\..\INFRA
+    .\install.ps1 ..\Profiles\res\packages.config
+    cd $PSScriptRoot
+    $textBox2.Text += "packages install - FINISH"
+}
 $button1_click = {
     $custom_form = New-Object System.Windows.Forms.Form
     $custom_form.Text ='Custom'
@@ -22,7 +39,7 @@ $button1_click = {
 
         $button_y += 30
     }
-
+        
     $custom_form.ShowDialog()
 }
 
@@ -34,12 +51,14 @@ Function profile_click()
         $i = 0
         foreach ($profile in $profiles_list) {
             if ($this.Text -eq $profile) {
+                $global:current_config_file_name = $this.Text
                 $textBox1.Text = $prof_packages_list[$i]
                 $textBox1.Refresh()
                 break
             }
             ++$i
         }
+
     }
 }
 Function init_textbox2()
@@ -120,11 +139,15 @@ foreach ($prof in $profiles_list)
     $radioBtn.ForeColor = "White"
     $radioBtn.Add_Click({profile_click $profiles_list $prof_packages_list $textBox1})
 
+
     $groupBox1.Controls.Add($radioBtn)
 
     $button_y += 30
     $radio_buttons += $radioBtn
+    
+    
 }
+
 $main_form.Controls.Add($groupBox1)
 
 $button1 = New-Object System.Windows.Forms.Button
@@ -140,6 +163,7 @@ $button2.Location = New-Object System.Drawing.Point(450,280)
 $button2.Size = New-Object System.Drawing.Size(120,30)
 $button2.Text = "Install"
 $button2.ForeColor = "White"
+$button2.Add_Click($install_button_click)
 $main_form.Controls.Add($button2)
 
 $textBox2 = New-Object System.Windows.Forms.TextBox
@@ -173,3 +197,5 @@ $main_form.Controls.Add($progressBar)
 #$main_form.Add_Shown($ShownFormAction)
 
 $main_form.ShowDialog()
+
+    

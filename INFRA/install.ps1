@@ -3,11 +3,11 @@
 function install_choco {
     $testchoco = powershell choco -v
     if(-not($testchoco)){
-        Write-Output "#### Seems Chocolatey is not installed, installing now ####"
+        Write-Host "#### Seems Chocolatey is not installed, installing now ####"
         Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     }
     else{
-        Write-Output "#### Chocolatey Version $testchoco is already installed ####"
+        Write-Host "#### Chocolatey Version $testchoco is already installed ####"
     }
 
     # or
@@ -30,17 +30,17 @@ function refresh_env {
     # (rather than invoking refreshenv.cmd, the *batch file* for use with cmd.exe)
     # This should make git.exe accessible via the refreshed $env:PATH, so that it
     # can be called by name only.
-    Write-Output "#### refreshenv ####"
+    Write-Host "#### refreshenv ####"
     refreshenv
 }
 
 
 function install_packages {
-    Write-Output "#### $package installing now ####"
-    choco install $package  -y
+    Write-Host "#### $package installing now ####"
+    choco install $package  -y | Write-Host 
 }
 
-$package=$args[0]
+$package=$args
 
 Write-Host "#### start install packages ####"
 
