@@ -17,13 +17,28 @@ $install_button_click = {
     .\install.ps1 ..\Profiles\res\packages.config
     cd $PSScriptRoot
     $textBox2.Text += "packages install - FINISH"
+    $textBox2.Refresh()
 }
+Function checkbox_click  {
+    Param($packages_list_copy)
+    if ($this.Checked -eq $false)
+    {
+        $packages_list_copy.Remove($this.Text)
+    }
+    else{
+        $packages_list_copy.Add($this.Text)
+    }
+}
+
 Function custom_ok_button_click  {
-    Param($profiles_list, $prof_packages_list)
+    Param($packages_list_copy)
+    $textBox2.Text += $packages_list_copy
+    $textBox2.Text += $new_line
+    $textBox2.Refresh()
     $custom_form.Close()
 }
 Function custom_button_click  {
-    Param($profiles_list, $prof_packages_list)
+    Param($packages_list)
 
     $custom_form = New-Object System.Windows.Forms.Form
     $custom_form.Text ='Custom'
@@ -32,7 +47,8 @@ Function custom_button_click  {
     $custom_form.AutoSize = $true
     $custom_form.BackColor = "Black"
 
-    $packages_list = $profiles_list #@("Notepad++", "MobaXterm", "VS Code", "WinScp", "VirtualBox", "Wireshark")
+    #$packages_list = $prof_packages_list #@("Notepad++", "MobaXterm", "VS Code", "WinScp", "VirtualBox", "Wireshark")
+    [System.Collections.ArrayList]$packages_list_copy = $packages_list
     $button_y = 10
     foreach ($package in $packages_list)
     {
@@ -41,17 +57,20 @@ Function custom_button_click  {
         $checkbox.Location = "10,$($button_y)"
         $checkbox.Text = $package
         $checkbox.ForeColor = "White"
+        $checkbox.Checked = $true
+        $checkbox.Add_Click({checkbox_click $packages_list_copy})
         $custom_form.Controls.Add($checkbox)
 
         $button_y += 30
     }
+    
 
     $custom_ok_button = New-Object System.Windows.Forms.Button
     $custom_ok_button.Location = New-Object System.Drawing.Point(20,280)
     $custom_ok_button.Size = New-Object System.Drawing.Size(120,30)
     $custom_ok_button.Text = "OK"
     $custom_ok_button.ForeColor = "White"
-    $custom_ok_button.Add_Click({custom_ok_button_click $profiles_list $prof_packages_list})
+    $custom_ok_button.Add_Click({custom_ok_button_click $packages_list_copy})
     $custom_form.Controls.Add($custom_ok_button)
 
     $custom_form.ShowDialog()
@@ -115,6 +134,7 @@ $groupBox1.text = "Profiles:"
 $groupBox1.ForeColor = "White"
 
 #$profiles_list = @("CU", "DU", "SIG", "SVG")
+$packages_list = @()
 $profiles_list = @()
 $prof_packages_list = @()
 
@@ -122,16 +142,19 @@ Get-ChildItem "$($PSScriptRoot)\..\Profiles" -Filter *.config |
 Foreach-Object {
     $profiles_list += ($_.BaseName)
 
-    $packages_list = ""
+    $packages_str = ""
     
     [xml]$xml = Get-Content $_.FullName
     $nodes = Select-Xml "//package/@id" $xml
     $nodes | ForEach-Object {
-        $packages_list += ($_.Node.Value)
-        $packages_list += $new_line
+        $packages_str += ($_.Node.Value)
+        $packages_str += $new_line
+        if(($_.Node.Value) -notin $packages_list){
+            $packages_list += ($_.Node.Value)
+        }
     }
     
-    $prof_packages_list += ($packages_list)
+    $prof_packages_list += ($packages_str)
 }
 
 $textBox1 = New-Object System.Windows.Forms.TextBox
@@ -169,7 +192,7 @@ $custom_button.Location = New-Object System.Drawing.Point(20,280)
 $custom_button.Size = New-Object System.Drawing.Size(120,30)
 $custom_button.Text = "Custom"
 $custom_button.ForeColor = "White"
-$custom_button.Add_Click({custom_button_click $profiles_list $prof_packages_list})
+$custom_button.Add_Click({custom_button_click $packages_list})
 $main_form.Controls.Add($custom_button)
 
 $install_button = New-Object System.Windows.Forms.Button
