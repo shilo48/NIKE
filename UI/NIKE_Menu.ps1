@@ -1,21 +1,24 @@
 ﻿Add-Type -assembly System.Windows.Forms
 $NIKE_VER = "1.0.0"
 $global:current_config_file_name = ""
+$scriptDir = if (-not $PSScriptRoot) { Split-Path -Parent (Convert-Path ([environment]::GetCommandLineArgs()[0])) } else { $PSScriptRoot }
+$new_line = "`r`n"
+$font = New-Object System.Drawing.Font("Times New Roman",13)
 
 $install_button_click = {
     $textBox2.Text += "Create packages.config file"
     $textBox2.Text += $new_line
     $textBox2.Refresh()
-    $src_path = "$($PSScriptRoot)\..\Profiles\$($global:current_config_file_name).config"
-    $des_path = "$($PSScriptRoot)\..\Profiles\res\packages.config"
+    $src_path = "$($scriptDir)\..\Profiles\$($global:current_config_file_name).config"
+    $des_path = "$($scriptDir)\..\Profiles\res\packages.config"
     Copy-Item -Path $src_path -Destination $des_path
 
     $textBox2.Text += "packages install - RUN"
     $textBox2.Text += $new_line
     $textBox2.Refresh()
-    cd $PSScriptRoot\..\INFRA
+    cd $scriptDir\..\INFRA
     .\install.ps1 ..\Profiles\res\packages.config
-    cd $PSScriptRoot
+    cd $scriptDir
     $textBox2.Text += "packages install - FINISH"
     $textBox2.Text += $new_line
     $textBox2.Refresh()
@@ -66,9 +69,13 @@ Function custom_ok_button_click  {
         if ("customProfile" -eq $profile) {
             $prof_packages_list[$i] = $packages_list_copy_str
             $customProfilefound = $true
-            break
+            $radio_buttons[$i].Checked = $true
+            $radio_buttons[$i].PerformClick()
         }
-        ++$i
+        else {
+            $radio_buttons[$i].Checked = $false
+        }
+        $i += 1
     }
     if($customProfilefound -eq $false){
         $prof_packages_list.Add($packages_list_copy_str)
@@ -80,20 +87,22 @@ Function custom_ok_button_click  {
         $customRadioBtn.Text = "customProfile"
         $customRadioBtn.ForeColor = "White"
         $customRadioBtn.Add_Click({profile_click $profiles_list $prof_packages_list})
-        
+        $customRadioBtn.Checked = $true
+        $customRadioBtn.PerformClick()
+
         $groupBox1.Controls.Add($customRadioBtn)
         $groupBox1.Refresh()
 
         $button_y += 30
-        $radio_buttons += $radioBtn
+        $radio_buttons.Add($customRadioBtn)
     }
-
+    $groupBox1.Refresh()
     $custom_form.Close()
 }
 
 Function custom_xml_profile_xml ([string[]]$packages_list) {
     Write-Output $packages_list
-    $custom_profile_xml_path = "$($PSScriptRoot)\..\Profiles\customProfile.config"
+    $custom_profile_xml_path = "$($scriptDir)\..\Profiles\customProfile.config"
     New-Item $custom_profile_xml_path  -ItemType File -Force
     Set-Content $custom_profile_xml_path '<?xml version="1.0" encoding="utf-8"?>'
     Add-Content $custom_profile_xml_path '<packages>'
@@ -166,10 +175,6 @@ Function init_textbox2()
     }
 }
 
-$new_line = "`r`n"
-$font = New-Object System.Drawing.Font("Times New Roman",13)
-
-
 $main_form = New-Object System.Windows.Forms.Form
 $main_form.Text ='NIKE'
 $main_form.Width = 600
@@ -184,12 +189,11 @@ $groupBox1.size = '280,250'
 $groupBox1.text = "Profiles:"
 $groupBox1.ForeColor = "White"
 
-#$profiles_list = @("CU", "DU", "SIG", "SVG")
 $packages_list = @()
 [System.Collections.ArrayList]$profiles_list = @()
 [System.Collections.ArrayList]$prof_packages_list = @()
 
-Get-ChildItem "$($PSScriptRoot)\..\Profiles" -Filter *.config | 
+Get-ChildItem "$($scriptDir)\..\Profiles" -Filter *.config | 
 Foreach-Object {
     $profiles_list += ($_.BaseName)
 
@@ -217,7 +221,7 @@ $textBox1.ScrollBars = 'Both'
 $main_form.Controls.Add($textBox1)
 
 $button_y = 30
-$radio_buttons = @()
+[System.Collections.ArrayList]$radio_buttons = @()
 foreach ($prof in $profiles_list)
 {
     $radioBtn = New-Object System.Windows.Forms.RadioButton
