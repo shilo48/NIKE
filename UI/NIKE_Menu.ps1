@@ -278,7 +278,7 @@ $main_form.Controls.Add($install_button)
 
 $textBox2 = New-Object System.Windows.Forms.TextBox
 $textBox2.Location = New-Object System.Drawing.Point(20,320)
-$textBox2.Size = New-Object System.Drawing.Size(550,280)
+$textBox2.Size = New-Object System.Drawing.Size(550,320)
 $textBox2.AutoSize = $true
 $textBox2.Multiline = $true
 $textBox2.ScrollBars = 'Both'
@@ -286,26 +286,6 @@ $textBox2.BackColor = '#8c99c3'
 $textBox2.Text = ""
 init_textbox2
 $main_form.Controls.Add($textBox2)
-
-
-
-$batches = @(1,2,3,4,5,6,7,8,9,10)
-$progressBar = New-Object System.Windows.Forms.ProgressBar
-$progressBar.Location = '20, 610'
-$progressBar.Size = '550,35'
-$progressBar.Maximum = $batches.Count
-$progressBar.Minimum = 0
-$main_form.Controls.Add($progressBar)
-
-#$ShownFormAction = {
-#    $main_form.Activate()
-#    foreach ($b in $batches) {
-#        $progressBar.Increment(1)
-#        Start-Sleep -Seconds 1
-#    }
-#    $main_form.Dispose()
-#}
-#$main_form.Add_Shown($ShownFormAction)
 
 $main_form.ShowDialog()
 
