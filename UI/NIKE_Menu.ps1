@@ -112,6 +112,8 @@ Function custom_button_click  {
     $custom_form.Height = 600
     $custom_form.AutoSize = $true
     $custom_form.BackColor = "Black"
+    $custom_form.Font = $font
+    $custom_form.AutoSize = $true
 
     #$packages_list = $prof_packages_list #@("Notepad++", "MobaXterm", "VS Code", "WinScp", "VirtualBox", "Wireshark")
     [System.Collections.ArrayList]$packages_list_copy = $packages_list
@@ -165,7 +167,7 @@ Function init_textbox2()
 }
 
 $new_line = "`r`n"
-$font = New-Object System.Drawing.Font("Times New Roman",12,[System.Drawing.FontStyle]::Italic)
+$font = New-Object System.Drawing.Font("Times New Roman",13)
 
 
 $main_form = New-Object System.Windows.Forms.Form
@@ -178,7 +180,7 @@ $main_form.Font = $font
 
 $groupBox1 = New-Object System.Windows.Forms.GroupBox
 $groupBox1.Location = '20,20'
-$groupBox1.size = '120,250'
+$groupBox1.size = '280,250'
 $groupBox1.text = "Profiles:"
 $groupBox1.ForeColor = "White"
 
@@ -207,8 +209,8 @@ Foreach-Object {
 }
 
 $textBox1 = New-Object System.Windows.Forms.TextBox
-$textBox1.Location = New-Object System.Drawing.Point(150,20)
-$textBox1.Size = New-Object System.Drawing.Size(400,250)
+$textBox1.Location = New-Object System.Drawing.Point(310,20)
+$textBox1.Size = New-Object System.Drawing.Size(260,250)
 $textBox1.AutoSize = $true
 $textBox1.Multiline = $true
 $textBox1.ScrollBars = 'Both'
