@@ -3,7 +3,7 @@ $NIKE_VER = "1.0.0"
 $global:current_config_file_name = ""
 $scriptDir = if (-not $PSScriptRoot) { Split-Path -Parent (Convert-Path ([environment]::GetCommandLineArgs()[0])) } else { $PSScriptRoot }
 $new_line = "`r`n"
-$font = New-Object System.Drawing.Font("Times New Roman",13)
+$font = New-Object System.Drawing.Font("Microsoft Sans Serif",10)
 
 $install_button_click = {
     $textBox2.Text += "Create packages.config file"
@@ -117,12 +117,18 @@ Function custom_button_click  {
 
     $custom_form = New-Object System.Windows.Forms.Form
     $custom_form.Text ='Custom'
-    $custom_form.Width = 150
-    $custom_form.Height = 600
+    $custom_form.Width = 100
+    $custom_form.Height = 500
     $custom_form.AutoSize = $true
-    $custom_form.BackColor = "Black"
+    $custom_form.ForeColor = "White"
+    $custom_form.BackColor = '#101f51'
     $custom_form.Font = $font
+    
+    $custom_form.FormBorderStyle = 3
     $custom_form.AutoSize = $true
+    $custom_form.MaximizeBox = $false
+    $custom_form.MinimizeBox = $false
+
 
     #$packages_list = $prof_packages_list #@("Notepad++", "MobaXterm", "VS Code", "WinScp", "VirtualBox", "Wireshark")
     [System.Collections.ArrayList]$packages_list_copy = $packages_list
@@ -179,15 +185,22 @@ $main_form = New-Object System.Windows.Forms.Form
 $main_form.Text ='NIKE'
 $main_form.Width = 600
 $main_form.Height = 700
+$main_form.BackColor = "#0d1a44"
 $main_form.AutoSize = $true
-$main_form.BackColor = "Black"
+$main_form.FormBorderStyle = 3
+$main_form.MaximizeBox = $false
+$main_form.MinimizeBox = $false
 $main_form.Font = $font
 
 $groupBox1 = New-Object System.Windows.Forms.GroupBox
 $groupBox1.Location = '20,20'
-$groupBox1.size = '280,250'
+$groupBox1.size = '265,250'
 $groupBox1.text = "Profiles:"
 $groupBox1.ForeColor = "White"
+$groupBox1.BackColor = '#101f51'
+$groupBox1.Cursor = 'Hand'
+$groupBox1.Padding = 0
+$groupBox1.AutoSize = $true
 
 $packages_list = @()
 [System.Collections.ArrayList]$profiles_list = @()
@@ -217,6 +230,7 @@ $textBox1.Location = New-Object System.Drawing.Point(310,20)
 $textBox1.Size = New-Object System.Drawing.Size(260,250)
 $textBox1.AutoSize = $true
 $textBox1.Multiline = $true
+$textBox1.BackColor = '#8c99c3'
 $textBox1.ScrollBars = 'Both'
 $main_form.Controls.Add($textBox1)
 
@@ -225,8 +239,8 @@ $button_y = 30
 foreach ($prof in $profiles_list)
 {
     $radioBtn = New-Object System.Windows.Forms.RadioButton
-    $radioBtn.size = '350,20'
-    $radioBtn.Location = "30,$($button_y)"
+    $radioBtn.size = '200,20'
+    $radioBtn.Location = "10,$($button_y)"
     $radioBtn.Text = $prof
     $radioBtn.ForeColor = "White"
     $radioBtn.Add_Click({profile_click $profiles_list $prof_packages_list})
@@ -247,6 +261,8 @@ $custom_button.Location = New-Object System.Drawing.Point(20,280)
 $custom_button.Size = New-Object System.Drawing.Size(120,30)
 $custom_button.Text = "Custom"
 $custom_button.ForeColor = "White"
+$custom_button.BackColor = "#101f51"
+$custom_button.Cursor = 'Hand'
 $custom_button.Add_Click({custom_button_click $packages_list $profiles_list $prof_packages_list $groupBox1 $radio_buttons $button_y})
 $main_form.Controls.Add($custom_button)
 
@@ -255,6 +271,8 @@ $install_button.Location = New-Object System.Drawing.Point(450,280)
 $install_button.Size = New-Object System.Drawing.Size(120,30)
 $install_button.Text = "Install"
 $install_button.ForeColor = "White"
+$install_button.BackColor = "#101f51"
+$install_button.Cursor = 'Hand'
 $install_button.Add_Click($install_button_click)
 $main_form.Controls.Add($install_button)
 
@@ -264,6 +282,7 @@ $textBox2.Size = New-Object System.Drawing.Size(550,280)
 $textBox2.AutoSize = $true
 $textBox2.Multiline = $true
 $textBox2.ScrollBars = 'Both'
+$textBox2.BackColor = '#8c99c3'
 $textBox2.Text = ""
 init_textbox2
 $main_form.Controls.Add($textBox2)
