@@ -30,18 +30,70 @@ Function checkbox_click  {
         $packages_list_copy.Add($this.Text)
     }
 }
+Function profile_click()
+{
+    Param($profiles_list, $prof_packages_list)
 
+    if ($this.Checked) {
+        $i = 0
+        foreach ($profile in $profiles_list) {
+            if ($this.Text -eq $profile) {
+                $global:current_config_file_name = $this.Text
+                $textBox1.Text = $prof_packages_list[$i]
+                $textBox1.Refresh()
+                break
+            }
+            ++$i
+        }
+
+    }
+}
 Function custom_ok_button_click  {
-    Param($packages_list_copy)
-    $textBox2.Text += $packages_list_copy
-    $textBox2.Text += $new_line
-    $textBox2.Refresh()
+    Param($packages_list_copy, $profiles_list, $prof_packages_list, $groupBox1, $radio_buttons, $button_y)
+
+    custom_xml_profile_xml $packages_list_copy
+    
+    
+    $packages_list_copy_str = ""
+    foreach ($package in $packages_list_copy) {
+        $packages_list_copy_str += $package
+        $packages_list_copy_str += $new_line
+    }
+    
+    $customProfilefound = $false
+    $i = 0
+    foreach ($profile in $profiles_list) {
+        if ("customProfile" -eq $profile) {
+            $prof_packages_list[$i] = $packages_list_copy_str
+            $customProfilefound = $true
+            break
+        }
+        ++$i
+    }
+    if($customProfilefound -eq $false){
+        $prof_packages_list.Add($packages_list_copy_str)
+        $profiles_list.Add("customProfile")
+
+        $customRadioBtn = New-Object System.Windows.Forms.RadioButton
+        $customRadioBtn.size = '350,20'
+        $customRadioBtn.Location = New-Object System.Drawing.Point(30,$($button_y))
+        $customRadioBtn.Text = "customProfile"
+        $customRadioBtn.ForeColor = "White"
+        $customRadioBtn.Add_Click({profile_click $profiles_list $prof_packages_list})
+        
+        $groupBox1.Controls.Add($customRadioBtn)
+        $groupBox1.Refresh()
+
+        $button_y += 30
+        $radio_buttons += $radioBtn
+    }
+
     $custom_form.Close()
 }
 
 Function custom_xml_profile_xml ([string[]]$packages_list) {
     Write-Output $packages_list
-    $custom_profile_xml_path = "$($PSScriptRoot)\..\Profiles\customProfile.xml"
+    $custom_profile_xml_path = "$($PSScriptRoot)\..\Profiles\customProfile.config"
     New-Item $custom_profile_xml_path  -ItemType File -Force
     Set-Content $custom_profile_xml_path '<?xml version="1.0" encoding="utf-8"?>'
     Add-Content $custom_profile_xml_path '<packages>'
@@ -52,7 +104,7 @@ Function custom_xml_profile_xml ([string[]]$packages_list) {
 }
 
 Function custom_button_click  {
-    Param($packages_list)
+    Param($packages_list, $profiles_list, $prof_packages_list, $groupBox1, $radio_buttons, $profile_button_y)
 
     $custom_form = New-Object System.Windows.Forms.Form
     $custom_form.Text ='Custom'
@@ -80,34 +132,17 @@ Function custom_button_click  {
     
 
     $custom_ok_button = New-Object System.Windows.Forms.Button
-    $custom_ok_button.Location = New-Object System.Drawing.Point(20,280)
+    $custom_ok_button.Location = New-Object System.Drawing.Point(20,480)
     $custom_ok_button.Size = New-Object System.Drawing.Size(120,30)
     $custom_ok_button.Text = "OK"
     $custom_ok_button.ForeColor = "White"
-    $custom_ok_button.Add_Click({custom_ok_button_click $packages_list_copy})
+    $custom_ok_button.Add_Click({custom_ok_button_click $packages_list_copy $profiles_list $prof_packages_list $groupBox1 $radio_buttons $profile_button_y})
     $custom_form.Controls.Add($custom_ok_button)
 
     $custom_form.ShowDialog()
 }
 
-Function profile_click()
-{
-    Param($profiles_list, $prof_packages_list, $textBox1)
-    
-    if ($this.Checked) {
-        $i = 0
-        foreach ($profile in $profiles_list) {
-            if ($this.Text -eq $profile) {
-                $global:current_config_file_name = $this.Text
-                $textBox1.Text = $prof_packages_list[$i]
-                $textBox1.Refresh()
-                break
-            }
-            ++$i
-        }
 
-    }
-}
 Function init_textbox2()
 {
     $powershell_ver = $PSVersionTable.PSVersion
@@ -149,8 +184,8 @@ $groupBox1.ForeColor = "White"
 
 #$profiles_list = @("CU", "DU", "SIG", "SVG")
 $packages_list = @()
-$profiles_list = @()
-$prof_packages_list = @()
+[System.Collections.ArrayList]$profiles_list = @()
+[System.Collections.ArrayList]$prof_packages_list = @()
 
 Get-ChildItem "$($PSScriptRoot)\..\Profiles" -Filter *.config | 
 Foreach-Object {
@@ -188,7 +223,7 @@ foreach ($prof in $profiles_list)
     $radioBtn.Location = "30,$($button_y)"
     $radioBtn.Text = $prof
     $radioBtn.ForeColor = "White"
-    $radioBtn.Add_Click({profile_click $profiles_list $prof_packages_list $textBox1})
+    $radioBtn.Add_Click({profile_click $profiles_list $prof_packages_list})
 
 
     $groupBox1.Controls.Add($radioBtn)
@@ -206,7 +241,7 @@ $custom_button.Location = New-Object System.Drawing.Point(20,280)
 $custom_button.Size = New-Object System.Drawing.Size(120,30)
 $custom_button.Text = "Custom"
 $custom_button.ForeColor = "White"
-$custom_button.Add_Click({custom_button_click $packages_list})
+$custom_button.Add_Click({custom_button_click $packages_list $profiles_list $prof_packages_list $groupBox1 $radio_buttons $button_y})
 $main_form.Controls.Add($custom_button)
 
 $install_button = New-Object System.Windows.Forms.Button
