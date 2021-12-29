@@ -258,6 +258,7 @@ $custom_button.Size = New-Object System.Drawing.Size(120,30)
 $custom_button.Text = "Custom"
 $custom_button.ForeColor = "White"
 $custom_button.BackColor = "#101f51"
+$custom_button.Cursor = 'Hand'
 $custom_button.Add_Click({custom_button_click $packages_list $profiles_list $prof_packages_list $groupBox1 $radio_buttons $button_y})
 $main_form.Controls.Add($custom_button)
 
@@ -267,6 +268,7 @@ $install_button.Size = New-Object System.Drawing.Size(120,30)
 $install_button.Text = "Install"
 $install_button.ForeColor = "White"
 $install_button.BackColor = "#101f51"
+$install_button.Cursor = 'Hand'
 $install_button.Add_Click($install_button_click)
 $main_form.Controls.Add($install_button)
 
