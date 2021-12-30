@@ -52,7 +52,7 @@ Function profile_click()
     }
 }
 Function custom_ok_button_click  {
-    Param($packages_list_copy, $profiles_list, $prof_packages_list, $groupBox1, $radio_buttons, $button_y)
+    Param($packages_list_copy, $profiles_list, $prof_packages_list, $panel, $radio_buttons, $button_y)
 
     custom_xml_profile_xml $packages_list_copy
     
@@ -83,20 +83,20 @@ Function custom_ok_button_click  {
 
         $customRadioBtn = New-Object System.Windows.Forms.RadioButton
         $customRadioBtn.size = '350,20'
-        $customRadioBtn.Location = New-Object System.Drawing.Point(30,$($button_y))
+        $customRadioBtn.Location = New-Object System.Drawing.Point(10,$($button_y))
         $customRadioBtn.Text = "customProfile"
         $customRadioBtn.ForeColor = "White"
         $customRadioBtn.Add_Click({profile_click $profiles_list $prof_packages_list})
         $customRadioBtn.Checked = $true
         $customRadioBtn.PerformClick()
 
-        $groupBox1.Controls.Add($customRadioBtn)
-        $groupBox1.Refresh()
+        $panel.Controls.Add($customRadioBtn)
+        $panel.Refresh()
 
         $button_y += 30
         $radio_buttons.Add($customRadioBtn)
     }
-    $groupBox1.Refresh()
+    $panel.Refresh()
     $custom_form.Close()
 }
 
@@ -113,7 +113,7 @@ Function custom_xml_profile_xml ([string[]]$packages_list) {
 }
 
 Function custom_button_click  {
-    Param($packages_list, $profiles_list, $prof_packages_list, $groupBox1, $radio_buttons, $profile_button_y)
+    Param($packages_list, $profiles_list, $prof_packages_list, $panel, $radio_buttons, $profile_button_y)
 
     $custom_form = New-Object System.Windows.Forms.Form
     $custom_form.Text ='Custom'
@@ -129,10 +129,10 @@ Function custom_button_click  {
     $custom_form.MaximizeBox = $false
     $custom_form.MinimizeBox = $false
 
-
     #$packages_list = $prof_packages_list #@("Notepad++", "MobaXterm", "VS Code", "WinScp", "VirtualBox", "Wireshark")
     [System.Collections.ArrayList]$packages_list_copy = $packages_list
     $button_y = 10
+    [System.Collections.ArrayList]$checkbox_list = @()
     foreach ($package in $packages_list)
     {
         $checkbox = New-Object System.Windows.Forms.CheckBox
@@ -145,16 +145,33 @@ Function custom_button_click  {
         $custom_form.Controls.Add($checkbox)
 
         $button_y += 30
+        $checkbox_list.Add($checkbox)
     }
     
 
     $custom_ok_button = New-Object System.Windows.Forms.Button
-    $custom_ok_button.Location = New-Object System.Drawing.Point(20,480)
+    $custom_ok_button.Location = New-Object System.Drawing.Point(10,$button_y)
     $custom_ok_button.Size = New-Object System.Drawing.Size(120,30)
     $custom_ok_button.Text = "OK"
     $custom_ok_button.ForeColor = "White"
-    $custom_ok_button.Add_Click({custom_ok_button_click $packages_list_copy $profiles_list $prof_packages_list $groupBox1 $radio_buttons $profile_button_y})
+    $custom_ok_button.Add_Click({custom_ok_button_click $packages_list_copy $profiles_list $prof_packages_list $panel $radio_buttons $profile_button_y})
     $custom_form.Controls.Add($custom_ok_button)
+
+    $custom_deselect_all_button = New-Object System.Windows.Forms.Button
+    $custom_deselect_all_button.Location = New-Object System.Drawing.Point(135,$button_y)
+    $custom_deselect_all_button.Size = New-Object System.Drawing.Size(120,30)
+    $custom_deselect_all_button.Text = "Deselect All"
+    $custom_deselect_all_button.ForeColor = "White"
+    $custom_deselect_all_button.Add_Click({custom_deselect_all_button_click $packages_list_copy $checkbox_list})
+    $custom_form.Controls.Add($custom_deselect_all_button)
+
+    $custom_select_all_button = New-Object System.Windows.Forms.Button
+    $custom_select_all_button.Location = New-Object System.Drawing.Point(260,$button_y)
+    $custom_select_all_button.Size = New-Object System.Drawing.Size(120,30)
+    $custom_select_all_button.Text = "Select All"
+    $custom_select_all_button.ForeColor = "White"
+    $custom_select_all_button.Add_Click({custom_select_all_button_click $packages_list_copy $checkbox_list})
+    $custom_form.Controls.Add($custom_select_all_button)
 
     $custom_form.ShowDialog()
 }
@@ -181,6 +198,36 @@ Function init_textbox2()
     }
 }
 
+Function clear_button_click()
+{
+    $textBox2.Text = ""
+    init_textbox2
+    $textBox2.Refresh()
+}
+
+Function custom_deselect_all_button_click()
+{
+    Param($packages_list_copy, $checkbox_list)
+
+    $packages_list_copy.Clear()
+    foreach ($checkbox in $checkbox_list)
+    {
+        $checkbox.Checked = $false
+    }
+}
+
+Function custom_select_all_button_click()
+{
+    Param($packages_list_copy, $checkbox_list)
+
+    $packages_list_copy.Clear()
+    foreach ($checkbox in $checkbox_list)
+    {
+        $packages_list_copy.Add($checkbox.Text)
+        $checkbox.Checked = $true
+    }
+}
+
 $main_form = New-Object System.Windows.Forms.Form
 $main_form.Text ='NIKE'
 $main_form.Width = 600
@@ -201,7 +248,20 @@ $groupBox1.ForeColor = "White"
 $groupBox1.BackColor = '#101f51'
 $groupBox1.Cursor = 'Hand'
 $groupBox1.Padding = 0
-$groupBox1.AutoSize = $true
+
+$panel = New-Object System.Windows.Forms.Panel
+$panel.Location = '20,20'
+$panel.Size = '240,220'
+$panel.ForeColor = "White"
+$panel.BackColor = '#101f51'
+$panel.Cursor = 'Hand'
+$panel.Padding = 0
+$panel.AutoScroll = $true
+$panel.VerticalScroll.Enabled = $true
+$panel.VerticalScroll.Visible = $true
+$panel.HorizontalScroll.Enabled = $true
+$panel.HorizontalScroll.Visible = $true
+$groupBox1.Controls.Add($panel)
 
 $packages_list = @()
 [System.Collections.ArrayList]$profiles_list = @()
@@ -235,7 +295,7 @@ $textBox1.BackColor = '#8c99c3'
 $textBox1.ScrollBars = 'Both'
 $main_form.Controls.Add($textBox1)
 
-$button_y = 30
+$button_y = 20
 [System.Collections.ArrayList]$radio_buttons = @()
 foreach ($prof in $profiles_list)
 {
@@ -247,7 +307,7 @@ foreach ($prof in $profiles_list)
     $radioBtn.Add_Click({profile_click $profiles_list $prof_packages_list})
 
 
-    $groupBox1.Controls.Add($radioBtn)
+    $panel.Controls.Add($radioBtn)
 
     $button_y += 30
     $radio_buttons += $radioBtn
@@ -264,7 +324,7 @@ $custom_button.Text = "Custom"
 $custom_button.ForeColor = "White"
 $custom_button.BackColor = "#101f51"
 $custom_button.Cursor = 'Hand'
-$custom_button.Add_Click({custom_button_click $packages_list $profiles_list $prof_packages_list $groupBox1 $radio_buttons $button_y})
+$custom_button.Add_Click({custom_button_click $packages_list $profiles_list $prof_packages_list $panel $radio_buttons $button_y})
 $main_form.Controls.Add($custom_button)
 
 $install_button = New-Object System.Windows.Forms.Button
@@ -294,6 +354,16 @@ $textBox2.BackColor = '#8c99c3'
 $textBox2.Text = ""
 init_textbox2
 $main_form.Controls.Add($textBox2)
+
+$clear_button = New-Object System.Windows.Forms.Button
+$clear_button.Location = New-Object System.Drawing.Point(20,650)
+$clear_button.Size = New-Object System.Drawing.Size(120,30)
+$clear_button.Text = "Clear"
+$clear_button.ForeColor = "White"
+$clear_button.BackColor = "#101f51"
+$clear_button.Cursor = 'Hand'
+$clear_button.Add_Click({clear_button_click})
+$main_form.Controls.Add($clear_button)
 
 $main_form.ShowDialog()
 
